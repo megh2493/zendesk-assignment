@@ -44,25 +44,37 @@ def login():
 @app.route('/')
 @login_required
 def index():
+    if request.method == 'POST':
+        if request.form['submit'] == "view_all":
+            pass
+        if request.form['submit'] == "search_id":
+            pass
+    else:
+        return render_template('index.html')
+
+
+@app.route('/tickets')
+@login_required
+def generate_tickets():
     tickets = list()
     url = requests.compat.urljoin(g.user.domain, '/api/v2/tickets.json?include=users')
 
     while url:
-        users = dict()
+        users_list = dict()
         r = g.user.session.get(url)
         data = r.json()
 
         for i in data['users']:
-            users[i['id']] = i['name']
+            users_list[i['id']] = i['name']
 
         for i in data['tickets']:
-            tickets.append({'id': i['id'], 'subject': i['subject'], 'requester': users[i['requester_id']],
+            tickets.append({'id': i['id'], 'subject': i['subject'], 'requester': users_list[i['requester_id']],
                             'created': datetime.strptime(i['created_at'], '%Y-%m-%dT%H:%M:%SZ').strftime(
                                 '%d %b %Y %I:%M %p'), 'description': i['description']})
 
         url = data['next_page'] + '&include=users' if data['next_page'] else data['next_page']
 
-    return render_template('index.html', user=g.user, tickets=tickets)
+    return render_template('tickets.html', user=g.user, tickets=tickets)
 
 
 @app.route('/logout')
