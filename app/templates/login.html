@@ -38,6 +38,7 @@
                     {% endif %}
                 </div>
             </div>
+            {% if next is not none %}<input name="next" value="{{ next }}" hidden>{% endif %}
         </form>
     </div>
 </div>

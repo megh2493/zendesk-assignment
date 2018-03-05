@@ -1,7 +1,52 @@
 {% extends 'layout.html' %}
 
 {% block head %}
+<style>
+    .table-hover>tbody>tr.no-hover:hover {
+        background-color: #ffffff;
+    }
+</style>
 {% endblock %}
 
 {% block body %}
+<div class="container">
+    <br>
+    <br>
+    <table class="table table-bordered table-hover">
+        <thead class="thead-light">
+            <tr>
+              <th scope="col">ID</th>
+              <th scope="col">Subject</th>
+              <th scope="col">Requester</th>
+              <th scope="col">Requested</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ticket in tickets %}
+            <tr data-toggle="collapse" data-target="#ticket-{{ ticket['id'] }}" class="clickable">
+                <td>
+                    {{ ticket['id'] }}
+                </td>
+                <td>
+                    {{ ticket['subject'] }}
+                </td>
+                <td>
+                    {{ ticket['requester'] }}
+                </td>
+                <td>
+                    {{ ticket['created'] }}
+                </td>
+            </tr>
+            <tr class="no-hover">
+                <td colspan="4" style="padding: 0">
+                    <div class="collapse" id="ticket-{{ ticket['id'] }}">
+                        <div style="padding:10px">{{ ticket['description'] }}</div>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="/" class="btn btn-info">Back</a>
+</div>
 {% endblock %}

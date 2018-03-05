@@ -32,36 +32,35 @@ def login():
         if success:
             login_user(user)
             users[user.id] = user
-            return redirect(url_for('index'))
+            return redirect(request.form.get('next') or url_for('index'))
 
         else:
-            return render_template('login.html', invalid="*Invalid Credentials/Domain")
+            return render_template('login.html', invalid="*Invalid Credentials/Domain",
+                                   next=request.form.get('next'))
 
     else:
-        return render_template('login.html')
+        return render_template('login.html', next=request.args.get('next'))
 
 
 @app.route('/')
 @login_required
 def index():
-    if request.method == 'POST':
-        if request.form['submit'] == "view_all":
-            pass
-        if request.form['submit'] == "search_id":
-            pass
-    else:
-        return render_template('index.html')
+    return render_template('index.html', user=g.user)
 
 
 @app.route('/tickets')
 @login_required
-def generate_tickets():
+def get_tickets():
     tickets = list()
     url = requests.compat.urljoin(g.user.domain, '/api/v2/tickets.json?include=users')
 
     while url:
         users_list = dict()
         r = g.user.session.get(url)
+
+        if r.status_code >= 500:
+            return render_template('error.html', user=g.user, error='Sorry, the API is unavailable.'), r.status_code
+
         data = r.json()
 
         for i in data['users']:
@@ -73,6 +72,33 @@ def generate_tickets():
                                 '%d %b %Y %I:%M %p'), 'description': i['description']})
 
         url = data['next_page'] + '&include=users' if data['next_page'] else data['next_page']
+
+    return render_template('tickets.html', user=g.user, tickets=tickets)
+
+
+@app.route('/search')
+@login_required
+def get_ticket():
+    tickets = list()
+    url = requests.compat.urljoin(g.user.domain, '/api/v2/tickets/%s.json?include=users' % request.args['id'])
+
+    users_list = dict()
+    r = g.user.session.get(url)
+    if r.status_code == 404:
+        return render_template('error.html', user=g.user, error='The Ticket ID specified was not found.'), 404
+
+    elif r.status_code >= 500:
+        return render_template('error.html', user=g.user, error='Sorry, the API is unavailable.'), r.status_code
+
+    data = r.json()
+
+    for i in data['users']:
+        users_list[i['id']] = i['name']
+
+    tickets.append({'id': data['ticket']['id'], 'subject': data['ticket']['subject'],
+                    'requester': users_list[data['ticket']['requester_id']],
+                    'created': datetime.strptime(data['ticket']['created_at'], '%Y-%m-%dT%H:%M:%SZ').strftime(
+                        '%d %b %Y %I:%M %p'), 'description': data['ticket']['description']})
 
     return render_template('tickets.html', user=g.user, tickets=tickets)
 

@@ -5,17 +5,17 @@
     <br>
     <br>
     <div class="justify-content-center mr-md-8">
-        <form action="/tickets" method="POST">
+        <form action="/search" method="GET">
             <div class="form-group row justify-content-md-center">
                 <div class="col-md-8">
-                    <input class="form-control" type="search" placeholder="Enter Ticket ID" aria-label="Search">
+                    <input class="form-control" type="text" name="id" placeholder="Enter Ticket ID" aria-label="Search" required>
                 </div>
             </div>
             <div class="form-inline row justify-content-md-center">
-                <button type="submit" class="btn btn-info" name="submit" value="view_all">View All</button>
+                <button type="submit" class="btn btn-info">Search by ID</button>
                 <div class="col-md-auto">
                 </div>
-                <button type="submit" class="btn btn-info" name="submit" value="search_id">Search by ID</button>
+                <a href="/tickets" class="btn btn-info" value="view_all">View All</a>
             </div>
         </form>
     </div>
