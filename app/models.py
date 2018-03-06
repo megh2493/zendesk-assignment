@@ -28,9 +28,11 @@ class User:
                 self.displayname = data['user']['name']
                 if data['user']['photo']:
                     self.img = data['user']['photo']['thumbnails']['content_url']
-                return True
 
-        return False
+            else:
+                return 401
+
+        return r.status_code
 
     @staticmethod
     def is_authenticated():

@@ -12,19 +12,23 @@
 <div class="container">
     <br>
     <br>
-    <table class="table table-bordered table-hover">
+    <table class="table table-hover">
         <thead class="thead-light">
-            <tr>
-              <th scope="col">ID</th>
-              <th scope="col">Subject</th>
-              <th scope="col">Requester</th>
-              <th scope="col">Requested</th>
+            <tr align="center">
+                <th scope="col" style="padding-right:0px"></th>
+                <th scope="col" style="padding-left:0px;">ID</th>
+                <th scope="col">Subject</th>
+                <th scope="col">Requester</th>
+                <th scope="col">Requested</th>
             </tr>
         </thead>
         <tbody>
             {% for ticket in tickets %}
             <tr data-toggle="collapse" data-target="#ticket-{{ ticket['id'] }}" class="clickable">
-                <td>
+                <td style="padding-right:0px;width:10px;">
+                    <span class="badge badge-{{ status_mappings[ticket['status']][0] }}">{{ status_mappings[ticket['status']][1] }}</span>
+                </td>
+                <td align="right" style="padding-left:0px;">
                     {{ ticket['id'] }}
                 </td>
                 <td>
@@ -38,7 +42,7 @@
                 </td>
             </tr>
             <tr class="no-hover">
-                <td colspan="4" style="padding: 0">
+                <td colspan="5" style="padding: 0">
                     <div class="collapse" id="ticket-{{ ticket['id'] }}">
                         <div style="padding:10px">{{ ticket['description'] }}</div>
                     </div>

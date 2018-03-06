@@ -8,6 +8,8 @@ from app import app, lm
 from .models import User
 
 users = dict()
+status_mappings = {'new': ['warning', 'n'], 'open': ['danger', 'o'], 'pending': ['info', 'p'],
+                   'closed': ['secondary', 'c']}
 
 
 @app.before_request
@@ -27,16 +29,23 @@ def login():
 
     if request.method == 'POST':
         user = User('https://' + request.form['domain'] + '.zendesk.com')
-        success = user.login(request.form['email'], request.form['password'])
+        status = user.login(request.form['email'], request.form['password'])
 
-        if success:
+        if status == 200:
             login_user(user)
             users[user.id] = user
             return redirect(request.form.get('next') or url_for('index'))
 
-        else:
-            return render_template('login.html', invalid="*Invalid Credentials/Domain",
-                                   next=request.form.get('next'))
+        elif status == 401:
+            return render_template('login.html', invalid="*Invalid Credentials",
+                                   next=request.form.get('next')), status
+
+        elif status == 404:
+            return render_template('login.html', invalid="*Invalid Domain",
+                                   next=request.form.get('next')), status
+
+        elif status >= 500:
+            return render_template('error.html', error='Sorry, the API is unavailable.'), status
 
     else:
         return render_template('login.html', next=request.args.get('next'))
@@ -69,11 +78,11 @@ def get_tickets():
         for i in data['tickets']:
             tickets.append({'id': i['id'], 'subject': i['subject'], 'requester': users_list[i['requester_id']],
                             'created': datetime.strptime(i['created_at'], '%Y-%m-%dT%H:%M:%SZ').strftime(
-                                '%d %b %Y %I:%M %p'), 'description': i['description']})
+                                '%d %b %Y %I:%M %p'), 'description': i['description'], 'status': i['status']})
 
         url = data['next_page'] + '&include=users' if data['next_page'] else data['next_page']
 
-    return render_template('tickets.html', user=g.user, tickets=tickets)
+    return render_template('tickets.html', user=g.user, tickets=tickets, status_mappings=status_mappings)
 
 
 @app.route('/search')
@@ -98,9 +107,10 @@ def get_ticket():
     tickets.append({'id': data['ticket']['id'], 'subject': data['ticket']['subject'],
                     'requester': users_list[data['ticket']['requester_id']],
                     'created': datetime.strptime(data['ticket']['created_at'], '%Y-%m-%dT%H:%M:%SZ').strftime(
-                        '%d %b %Y %I:%M %p'), 'description': data['ticket']['description']})
+                        '%d %b %Y %I:%M %p'), 'description': data['ticket']['description'],
+                    'status': data['ticket']['status']})
 
-    return render_template('tickets.html', user=g.user, tickets=tickets)
+    return render_template('tickets.html', user=g.user, tickets=tickets, status_mappings=status_mappings)
 
 
 @app.route('/logout')
