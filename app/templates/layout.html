@@ -4,35 +4,11 @@
     <meta charset="UTF-8">
     <title>Zendesk Ticket Viewer</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/fontawesome-all.min.css') }}">
     <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
 
-    <style>
-        .dropdown-toggle::after {
-            display:none
-        }
-        .dropdown-menu:before {
-            position: absolute;
-            top: -7px;
-            right: 17px;
-            display: inline-block;
-            border-right: 7px solid transparent;
-            border-bottom: 7px solid #ccc;
-            border-left: 7px solid transparent;
-            border-bottom-color: rgba(0, 0, 0, 0.2);
-            content: '';
-        }
-        .dropdown-menu:after {
-            position: absolute;
-            top: -6px;
-            right: 18px;
-            display: inline-block;
-            border-right: 6px solid transparent;
-            border-bottom: 6px solid #ffffff;
-            border-left: 6px solid transparent;
-            content: '';
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
 
     <nav class="navbar navbar-expand-md navbar-light justify-content-between" style="background-color: #e3f2fd;">
         <a class="navbar-brand" href="/">Zendesk Ticket Viewer</a>
