@@ -10,7 +10,7 @@
 * <code> pip install -r requirements.txt </code>
 
 ## To run
-* Edit the <code> config.py </code> file as required. By default the server runs on '127.0.0.1:5000'.
+* Edit the <code>config.py</code> file as required. By default the server runs on '127.0.0.1:5000'.
 * <code> python run.py </code>
 * This opens the link to the webpage in a tab on the default web browser.
 
